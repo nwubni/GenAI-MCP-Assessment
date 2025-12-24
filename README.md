@@ -77,6 +77,11 @@ Bot: Found these products matching your search:
 [Filtered product results]
 ```
 
+### Customer Authentication Example
+```
+Login with donaldgarcia@example.net PIN 7912
+```
+
 ## Architecture
 
 - `main.py` - Console interface and main application entry point
