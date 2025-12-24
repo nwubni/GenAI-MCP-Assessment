@@ -22,9 +22,10 @@ class CustomerSupportChatbot:
                 }
             },
             "printers": {
-                "common_issues": ["paper jam", "poor print quality", "connectivity", "ink/toner"],
+                "common_issues": ["paper jam", "jamming", "poor print quality", "connectivity", "ink/toner", "printer"],
                 "troubleshooting": {
                     "paper jam": "Turn off printer, remove paper carefully, check for torn pieces",
+                    "jamming": "Turn off printer, remove paper carefully, check for torn pieces",
                     "poor print quality": "Clean print heads, check ink/toner levels, use correct paper type",
                     "connectivity": "Check USB/network connections, restart printer and computer",
                     "ink/toner": "Replace cartridges, ensure they're properly installed"
@@ -68,8 +69,8 @@ class CustomerSupportChatbot:
         """Generate a response based on user input and available tools"""
         user_lower = user_input.lower()
         
-        # Check if user is asking about available products
-        if any(keyword in user_lower for keyword in ["what products", "what do you have", "list products", "available products", "products do you"]):
+        # Check if user is asking about available products or pricing
+        if any(keyword in user_lower for keyword in ["what products", "what do you have", "list products", "available products", "products do you", "how much", "price", "cost"]):
             return self._handle_product_query()
         
         # Check for product-specific knowledge first
@@ -102,12 +103,26 @@ class CustomerSupportChatbot:
         try:
             # Try to get product list from MCP server
             result = self.mcp_client.call_tool("list_products", {})
-            if result and "content" in result:
-                return f"Here are our available products:\n{result['content']}"
-            elif result:
+            print(f"DEBUG: MCP result = {result}")  # Debug line
+            
+            if result:
                 # Handle different response formats
+                if isinstance(result, dict):
+                    if "content" in result:
+                        return f"Here are our available products:\n{result['content']}"
+                    elif "result" in result and "content" in result["result"]:
+                        return f"Here are our available products:\n{result['result']['content']}"
+                    else:
+                        # Try to extract any string data
+                        for key, value in result.items():
+                            if isinstance(value, str) and len(value) > 100:  # Likely product data
+                                return f"Here are our available products:\n{value}"
+                
+                # Fallback to string representation
                 products_data = str(result)
-                return f"Here are our available products:\n{products_data}"
+                if len(products_data) > 100:  # Has substantial content
+                    return f"Here are our available products:\n{products_data}"
+                    
         except Exception as e:
             print(f"Error fetching products: {e}")
         
