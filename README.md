@@ -12,12 +12,23 @@ A prototype customer support chatbot for computer products (monitors, printers, 
 
 ## Installation
 
-1. Install dependencies:
+1. Clone the repository:
+```bash
+git clone https://github.com/your-username/customer-support-chatbot.git
+```
+
+2. Create and activate a virtual environment:
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Set up environment (optional):
+4. Set up environment (optional):
 ```bash
 cp .env.example .env
 # Edit .env with your configuration
